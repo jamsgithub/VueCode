@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>组件创建的三种方式</title>
+    <script src="./libs/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- 如果要使用组件，直接把组件的名称，以HTML标签的形式，引入到页面中，即可 -->
+        <!-- 在注册的时候，如果组件命名是以驼峰命名的方式，在使用的时候驼峰字母变成小写，并且用-连接 -->
+        <!-- <my-com1></my-com1> -->
+        <!-- 如果在注册的时候，组件名都是小写，可以直接用 -->
+        <mycom1></mycom1>
+
+        <mycom2></mycom2>
+
+        <mycom3></mycom3>
+    </div>
+
+    <div id="app1">
+        <login></login>
+    </div>
+
+    <!-- 在被控制的 #app 外面，使用 template 元素，定义组件的HTML模板结构 -->
+    <template id="tmp1">
+        <div>
+            <h1>这是通过 template 元素，在外部定义的组件结构，这个方式，有代码的智能提示和高亮</h1>
+            <h4>好用，不错!</h4>
+        </div>
+    </template>
+
+    <template id="tmp2">
+        <h3>这是私有的 login 组件</h3>
+    </template>
+
+
+    <script>
+        //第一种方式:
+        //1.1 使用 Vue.extend 来创建全局的Vue组件
+        // var com1 = Vue.extend({
+        //     template:'<h3>这是使用 Vue.extend 创建的组件</h3>'//通过template 属性，指定了组件要展示的HTML结构
+        // })
+        //1.2  使用Vue.component('组件的名称' , 创建出来的组件模板对象)
+        // Vue.component('myCom1' , com1)
+
+        //在注册的时候，组件名可以使用驼峰命名法
+        // Vue.component('myCom1' , Vue.extend({
+        //     template:'<h3>这是使用 Vue.extend 创建的组件</h3>'
+        // }))
+
+        Vue.component('mycom1' , Vue.extend({
+            template:'<h3>这是使用 Vue.extend 创建的组件</h3>'
+        }))
+
+
+        //第二种方式：
+        Vue.component('mycom2' , {
+            //注意：不论是哪种方式创建出来的组件，组件中的 template 属性指向的模板内容，必须有且只能有唯一
+            //的一个根元素
+            template:'<div><h3>这是直接使用 Vue.component 创建出来的组件</h3><span>123</span></div>'
+        })
+
+        //第三种方式：
+        Vue.component('mycom3' , {
+            template:'#tmp1'
+        })
+
+
+        var vm = new Vue({
+            el:'#app',
+            data:{
+
+            },
+            methods:{
+
+            }
+        })
+
+
+        var vm1 = new Vue({
+            el:'#app1',
+            data:{
+
+            },
+            methods:{
+                
+            },
+            components:{//定义私有组件
+                login:{
+                    template:'#tmp2'
+                }
+            }
+        })
+    </script>
+    
+</body>
+</html>
