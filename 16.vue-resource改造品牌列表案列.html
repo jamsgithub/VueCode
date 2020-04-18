@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="./libs/vue.js"></script>
+    <script src="./libs/vue-resource1.5.js"></script>
+    <link rel="stylesheet" href="./libs/bootstrap.css">
+</head>
+<body>
+    <div id="app"> 
+        
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">添加品牌</h3>
+            </div>
+            <div class="panel-body form-inline">
+               
+                <label>
+                    Name:
+                    <input v-model="name" type="text" class="form-control"/>
+                </label>
+                <input type="button" value="添加" @click="add" class="btn btn-primary"/>
+                <label>
+                    全局搜索:
+                    <input type="text" class="form-control"/>
+                </label>
+            </div>
+        </div>
+        
+
+
+
+        <table class="table table-bordered table-hover" table-striped>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Ctime</th>
+                    <th>Operation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="car in list" :key="car.id">
+                    <td>{{car.id}}</td>
+                    <td>{{car.name}}</td>
+                    <td>{{car.ctime}}</td>
+                      <!-- .prevent：阻止默认行为 -->
+                    <td><a href="" @click.prevent="del(car.id)">删除</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        //通过全局配置了请求的数据接口的 根域名
+        //则在每次单独发起http请求的时候，请求的url路径，应该以相对路径开头，
+        //前面不能带 / ，否则，不会启用根路径做拼接
+        Vue.http.options.root = 'http://vue.studyit.io/'
+        //全局启用 emulateJSON 选项
+        Vue.http.options.emulateJSON = true
+
+        var vm = new Vue({
+            el:'#app',
+            data:{
+                id:'',
+                name:'',
+                list:[
+                    {id:0 , name:'奥迪' , ctime:new Date()},
+                    {id:1 , name:'奔驰' , ctime:new Date()}
+                ]
+            },
+            created:function() {//第二个生命周期方法: 当vm实例的 data 和 methods初始化完毕后，vm实例会自动执行这个生命周期函数
+                this.getAllList()               
+            },
+            methods: {
+                getAllList:function(){//获取所有品牌列表
+
+                    //当通过then指定回调函数之后，在回调函数中，可以拿到数据服务器返回的result
+                    //先判断result.status是否等于0 ， 如果等于0 ， 就成功，可以把result.message
+                    //赋值给this.list ， 如果不等于0 ，可以弹框提醒，获取数据失败!
+                    this.$http.get('api/getprodlist').then(result =>{//为了可以和全局 根域名 做拼接，url不能以 / 开头
+                        var body = result.body
+                        if(body.status === 0){
+                            this.list = body.message
+                        }else{
+                            alert("获取数据失败!")
+                        }
+                    })
+                },
+                add:function(){
+                    if(this.name === ''){
+                        alert('请填写品牌名称!')
+                        return
+                    }
+                    //this.$http.post()中接收三个参数：
+                    // 1.第一个参数: 要请求的URL地址
+                    // 2.第二个参数: 要提交给服务器的数据，要以对象的形式提交给服务器{name: this.name}
+                    // 3.第三个参数: 是一个配置对象，要以哪种表单数据类型提交过去，{emulateJSON: true},
+                    //   以普通表单格式，将数据交给服务器:application/x-www-form-urlencoded
+                    this.$http.post('api/addproduct' , {name:this.name}).then(result =>{
+                        if(result.body.status === 0){
+                            //添加成功了，再调用一下getAllList就能刷新品牌列表了
+                            this.getAllList()
+                            this.name = ''
+                        }else{
+                            alert('添加失败!')
+                        }
+                    })
+                    
+                },
+                del:function(id){
+                    console.info(id)
+                }
+            },
+        })
+    </script>
+</body>
+</html>

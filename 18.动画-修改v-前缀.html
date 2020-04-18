@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="./libs/vue.js"></script>
+    <!-- 自定义两组样式，来控制 transition 内部的元素的动画 -->
+    <style>
+        /* v-enter [这是一个时间点] 是进入之前，元素的起始状态，此时还没有开始进入 */
+        /* v-leave-to [这是一个时间点] 是动画离开之后，离开的终止状态，此时，元素动画已经结束 */
+        .v-enter,
+        .v-leave-to{
+            opacity: 0;
+            transform: translateX(150px)
+        }
+
+        /* v-enter-active [入场动画的时间段] */
+        /* v-leave-active [离场动画的时间段] */
+        .v-enter-active,
+        .v-leave-active{
+            /* all: 表示过渡所有属性  0.8s：表示过渡时长  ease：表示过渡模式 */
+            transition: all 0.8s ease;
+        }
+
+        .my-enter,
+        .my-leave-to{
+            opacity: 0;
+            transform: translateY(70px);
+        }
+
+        .my-enter-active,
+        .my-leave-active{
+            transition: all 0.4s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app">
+        <input type="button" value="toggle" @click="flag=!flag"/>
+        <!-- Vue提供的 transition 封装组件，可以给包裹任何元素和组件添加进入/离开过渡 -->
+        <!-- 详细使用：https://cn.vuejs.org/v2/guide/transitions.html -->
+        <transition>
+            <h3 v-show="flag">劳动竞赛了解了</h3>
+        </transition>
+
+        <hr/>
+
+        <input type="button" value="toggle" @click="flag2=!flag2"/>
+        <!-- 修改v-前缀为my- 控制不同的transition包裹元素或组件使用不同的动画 -->
+        <transition name="my">
+          <h5 v-show="flag2">这是H6元素!</h5>  
+        </transition>
+        
+    </div>
+
+    <script>
+        var vm = new Vue({
+            el:'#app',
+            data:{
+                flag:false,
+                flag2:false
+            }
+        })
+    </script>
+    
+</body>
+</html>
